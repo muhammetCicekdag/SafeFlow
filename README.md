@@ -31,7 +31,7 @@ Kümülatif Analiz: Tüm video boyunca toplam kaç karede hata olduğunu hesapla
 Modelimiz, endüstriyel sahalardaki karmaşık görüntüleri (toz, duman, düşük ışık) tolere edebilecek şekilde Tesla T4 GPU üzerinde 100 epoch boyunca eğitilmiştir.
 
 📊 Model Metrikleri
-Veri Seti Genişliği: 1.200 orijinal görsel, veri artırma (augmentation) ile 11.000 görsel.
+Veri Seti Genişliği: 1.200 orijinal görsel, veri artırma (augmentation) ile 11.000 e yakın görsel.
 
 Başarı Oranı (mAP50): %96.8 gibi rekor bir doğruluk seviyesi.
 
