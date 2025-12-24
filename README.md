@@ -76,9 +76,8 @@ pip install streamlit ultralytics opencv-python pillow pandas numpy
 python -m streamlit run app.py
 
 
-📂 PROJE DOSYA MİMARİSİ 🏢  ->Plaintext
 
-📦 SafeFlow-AI
+## 📦 SafeFlow-AI
 
  ┣ 📂 images            # Projenin görsel vitrini (Tüm ekran görüntüleri burada)
  
