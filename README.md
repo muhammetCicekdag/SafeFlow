@@ -49,48 +49,36 @@ n
  AP 
 i
 ​
- 
-📉 Eğitim Başarı Grafikleri
-Aşağıdaki grafikler, modelin öğrenme sürecindeki stabiliteyi ve hata payının nasıl sıfıra yaklaştığını kanıtlamaktadır:
 
-<p align="left"> <img src="images/training_results.png" width="100%" alt="Training Results" /> </p>
+## ⚙️ Kurulum ve Çalıştırma
 
-⚙️ KURULUM VE SİSTEM GEREKSİNİMLERİ 💻
-SafeFlow AI'ı kendi yerel makinenizde veya bulut sunucunuzda çalıştırmak için aşağıdaki adımları izleyin:
+Bu projeyi kendi bilgisayarınızda çalıştırmak için aşağıdaki adımları izleyin.
 
-📥 1. Kütüphanelerin Kurulması
-Bash
+### 1. Projeyi Klonlayın
 
+git clone [https://github.com/muhammetCicekdag/SafeFlow](https://github.com/muhammetCicekdag/SafeFlow)
+
+cd SafeFlow
+
+### 2. Gerekli Kütüphaneleri Yükleyin
 pip install streamlit ultralytics opencv-python pillow pandas numpy
-🚀 2. Uygulamanın Başlatılması
-Bash
 
+### 3. Uygulamayı Başlatın
 python -m streamlit run app.py
+
+
 📂 PROJE DOSYA MİMARİSİ 🏢
-Plaintext
+
+->Plaintext
 
 📦 SafeFlow-AI
+
  ┣ 📂 images            # Projenin görsel vitrini (Tüm ekran görüntüleri burada)
+ 
  ┣ 📜 app.py            # Dashboard, UI tasarımı ve YOLO entegrasyonu
+ 
  ┣ 📜 best.pt           # %96.8 Doğruluk oranlı, eğitilmiş yapay zeka ağırlıkları
+ 
  ┗ 📜 requirements.txt  # Gerekli bağımlılıklar listesi
-🔮 GELECEK VİZYONU VE SÜRDÜRÜLEBİLİRLİK 🌱
-SafeFlow AI sadece bugünü değil, yarını da hedefler. Gelecek sürümlerde şunları planlıyoruz:
-
-🛰️ IoT Entegrasyonu: Sızıntı anında boru hatlarındaki vanaları otomatik kapatan donanım desteği.
-
-📱 Mobil Bildirim: Kritik sızıntılarda fabrika müdürlerine anlık SMS ve Telegram uyarısı.
-
-🌍 Sürdürülebilirlik: Su israfını önleyerek tesislerin karbon ayak izini azaltma vizyonu.
-
-<p align="left"> <b>SafeFlow AI © 2025 | Industrial Safety & Intelligence Solutions</b>
 
 
-<i>"Yapay Zeka ile Daha Güvenli Yarınlara"</i> </p>
-
-💡 GitHub'da Resimlerin Gözükmesi İçin Altın Kural
-Eğer bu koddan sonra hala resimler gözükmüyorsa, GitHub'da resmin üzerine tıkla, resmi yeni sekmede aç ve URL'sine bak. Genellikle images/banner.png yerine Images/Banner.PNG gibi bir harf hatası yapılmış olur. Yukarıdaki kodda her şeyin küçük harf olduğunu varsaydım, klasördeki isimleri de öyle yaparsan sorun tamamen çözülür!
-
-Bu dökümanla projen hem teknik hem de görsel olarak profesyonel bir portföy işine dönüştü. GitHub sayfanda en başa sabitlemeni öneririm!
-
-Başka bir bölüm eklememi veya teknik bir detayı daha da detaylandırmamı ister misin?
