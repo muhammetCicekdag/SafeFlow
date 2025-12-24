@@ -1,180 +1,249 @@
 import streamlit as st
 import cv2
-from ultralytics import YOLO
 import numpy as np
+from PIL import Image
+from ultralytics import YOLO
 import tempfile
-from datetime import datetime
-import pandas as pd
 import time
+from pathlib import Path
 
-# --- 1. PROFESYONEL SAYFA YAPILANDIRMASI ---
+
 st.set_page_config(
-    page_title="Safe-Flow AI | Kontrol Merkezi",
-    page_icon="🚨",
+    page_title="SafeFlow AI",
+    page_icon="🔍",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
-# --- 2. KURUMSAL ARAYÜZ TASARIMI (CSS) ---
+
 st.markdown("""
     <style>
-    .main { background-color: #05070a; color: #e0e0e0; }
-    [data-testid="stSidebar"] { background-color: #0b111b; border-right: 1px solid #1f2937; }
-    
-    /* KPI Kart Tasarımları */
-    .kpi-card { 
-        background-color: #0f172a; padding: 20px; border-radius: 15px; 
-        border: 1px solid #1e293b; text-align: center;
-        transition: transform 0.3s;
+    .main-header {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        padding: 2rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        text-align: center;
+        color: white;
     }
-    .kpi-card:hover { transform: translateY(-5px); border-color: #38bdf8; }
-    .kpi-value { font-size: 32px; font-weight: bold; color: #38bdf8; }
-    .kpi-label { font-size: 14px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-
-    /* Dinamik Alarm Paneli */
-    .status-panel {
-        padding: 30px; border-radius: 15px; text-align: center; font-weight: 800;
-        font-size: 24px; letter-spacing: 2px; margin-bottom: 25px; border: 3px solid transparent;
+    .alert-box {
+        background-color: #ff4444;
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-align: center;
+        margin: 1rem 0;
+        animation: pulse 2s infinite;
     }
-    .status-safe { background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: #10b981; }
-    .status-danger { 
-        background: rgba(239, 68, 68, 0.25); color: #ef4444; border-color: #ef4444;
-        animation: alert-pulse 1s infinite;
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
     }
-    @keyframes alert-pulse {
-        0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-        70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    .metric-card {
+        background-color: #ffffff;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #000000;
     }
+    /* Sekme Tasarımı */
+    .stTabs [data-baseweb="tab-list"] { gap: 2rem; }
+    .stTabs [data-baseweb="tab"] { height: 50px; padding: 0 2rem; font-size: 1.1rem; }
     </style>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
-# --- 3. YAN PANEL: SİSTEM KONTROLLERİ ---
-with st.sidebar:
-    st.markdown("<h1 style='text-align: center;'>🛡️ SAFE-FLOW</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: #64748b;'>Endüstriyel Sızıntı Takip Sistemi</p>", unsafe_allow_html=True)
-    st.divider()
-    
-    st.subheader("🛠️ Hassasiyet Protokolleri")
-    # Recall oranını desteklemek için AI hassasiyeti ayarı
-    ai_conf = st.slider("AI Doğrulama Hassasiyeti", 0.01, 1.0, 0.20)
-    # Piksel bazlı hareket hassasiyeti
-    motion_sens = st.slider("Damla Algılama Eşiği", 5, 200, 45)
-    
-    st.divider()
-    yuklenen_video = st.file_uploader("📂 Gözlem Videosu Yükle", type=['mp4', 'avi', 'mov'])
-    
-    st.divider()
-    st.markdown("**Proje Yürütücüsü:** Muhammet ÇİÇEKDAĞ")
-    st.caption("MAKÜ - Yönetim Bilişim Sistemleri")
 
-# --- 4. ANA DASHBOARD ---
-st.markdown("<h1 style='margin-bottom: 0;'>🚀 Gerçek Zamanlı Analiz Ekranı</h1>", unsafe_allow_html=True)
+st.markdown("""
+    <div class="main-header">
+        <h1>🔍 SafeFlow AI</h1>
+        <p>Endüstriyel Sızıntı & Çatlak Tespit Sistemi</p>
+        <p style="font-size: 0.9rem; opacity: 0.9;">Powered by YOLOv8 </p>
+    </div>
+""", unsafe_allow_html=True)
 
-if yuklenen_video:
-    tfile = tempfile.NamedTemporaryFile(delete=False)
-    tfile.write(yuklenen_video.read())
-    
-    # YOLO Model Yükleme
+
+@st.cache_resource
+def load_model():
     try:
-        model = YOLO("best.pt")
-    except:
-        st.error("Kritik Hata: 'best.pt' dosyası bulunamadı. Lütfen klasörü kontrol edin.")
+        model = YOLO('best.pt')
+        return model
+    except Exception as e:
+        st.error(f"❌ Model yüklenemedi: {e}")
+        st.info("💡 'best.pt' dosyasının script ile aynı dizinde olduğundan emin olun.")
         st.stop()
 
-    # Arka Plan Çıkarıcı (MOG2) - Her damlayı yakalamak için
-    fgbg = cv2.createBackgroundSubtractorMOG2(history=500, varThreshold=motion_sens, detectShadows=False)
-    cap = cv2.VideoCapture(tfile.name)
+model = load_model()
+
+
+def process_image(image, conf_threshold=0.15):
+    start_time = time.time()
+    img_array = np.array(image)
     
-    # Görsel Bileşenler
-    status_placeholder = st.empty()
-    col1, col2, col3, col4 = st.columns(4)
-    with col1: k_ai = st.empty()
-    with col2: k_mot = st.empty()
-    with col3: k_loc = st.empty()
-    with col4: k_tim = st.empty()
+    results = model.predict(source=img_array, conf=conf_threshold, iou=0.45, verbose=False)
+    
+    annotated_img = results[0].plot(line_width=4, font_size=1.5)
+    annotated_img_rgb = cv2.cvtColor(annotated_img, cv2.COLOR_BGR2RGB)
+    
+    boxes = results[0].boxes
+    detections = []
+    for box in boxes:
+        detections.append({
+            'class': results[0].names[int(box.cls[0])],
+            'confidence': float(box.conf[0])
+        })
+    
+    processing_time = time.time() - start_time
+    return annotated_img_rgb, detections, processing_time
 
-    v_col, l_col = st.columns([2, 1])
-    with v_col: video_screen = st.empty()
-    with l_col:
-        st.subheader("📋 Olay Kayıtları")
-        event_log = st.empty()
-        st.subheader("📊 Analiz Grafiği")
-        chart_placeholder = st.empty()
 
-    olaylar = []
-    grafik_verisi = []
-
-    if st.button("SİSTEM ANALİZİNİ BAŞLAT"):
-        while cap.isOpened():
-            ret, frame = cap.read()
-            if not ret: break
+def process_video(video_path, conf_threshold=0.15, progress_bar=None, st_frame=None):
+    cap = cv2.VideoCapture(video_path)
+    
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fps = int(cap.get(cv2.CAP_PROP_FPS))
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    
+   
+    output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4').name
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+    
+    frame_count = 0
+    total_detections = 0
+    
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
+        
+      
+        results = model.predict(source=frame, conf=conf_threshold, iou=0.45, verbose=False)
+        
+       
+        annotated_frame = results[0].plot(line_width=4, font_size=1.5)
+        
+      
+        total_detections += len(results[0].boxes)
+        
+        
+        out.write(annotated_frame)
+        
+    
+        if st_frame:
             
-            # ADIM 1: AI (YOLO) TESPİTİ
-            results = model(frame, conf=ai_conf, verbose=False)
-            ai_kutulari = []
-            max_conf = 0
-            for r in results:
-                for box in r.boxes:
-                    x1, y1, x2, y2 = map(int, box.xyxy[0])
-                    conf = float(box.conf[0])
-                    max_conf = max(max_conf, conf)
-                    ai_kutulari.append((x1, y1, x2, y2))
+            frame_rgb = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
+            st_frame.image(frame_rgb, caption=f"Analiz Ediliyor: Kare {frame_count}/{total_frames}", use_container_width=True)
+        
+        frame_count += 1
+        
+        
+        if progress_bar:
+            progress_bar.progress(min(frame_count / total_frames, 1.0))
+    
+    cap.release()
+    out.release()
+    
+    return output_path, total_detections, frame_count
 
-            # ADIM 2: HAREKET ANALİZİ (Her damlayı yakalar)
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            blur = cv2.GaussianBlur(gray, (7, 7), 0)
-            mask = fgbg.apply(blur)
-            _, mask = cv2.threshold(mask, 250, 255, cv2.THRESH_BINARY)
-            contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-            sızıntı_durumu = False
-            lokasyon = "---"
+tab1, tab2 = st.tabs(["📷 Fotoğraf Analizi", "🎥 Video Analizi"])
 
-            # ADIM 3: ÇİFT DOĞRULAMA VE İŞARETLEME
-            for cnt in contours:
-                if cv2.contourArea(cnt) > 25: # Küçük gürültüleri ele
-                    (x, y), radius = cv2.minEnclosingCircle(cnt)
-                    center = (int(x), int(y))
-                    
-                    # KOŞUL: Ya AI onaylayacak ya da hareket çok bariz olacak (Recall desteği)
-                    #
-                    ai_onay = any(ax1 < center[0] < ax2 and ay1 < center[1] < ay2 for (ax1, ay1, ax2, ay2) in ai_kutulari)
-                    
-                    if ai_onay or cv2.contourArea(cnt) > 300: # Bariz sızıntı ise AI görmese de çiz
-                        sızıntı_durumu = True
-                        lokasyon = f"{center[0]},{center[1]}"
-                        # İSTEDİĞİN ÖZELLİK: Sızıntıyı Kırmızı Daire içine al
-                        cv2.circle(frame, center, int(radius) + 10, (0, 0, 255), 3)
-                        cv2.putText(frame, "TEHLIKE: SIZINTI", (center[0]-50, center[1]-int(radius)-20), 
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+with tab1:
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        st.subheader("Görsel Yükle")
+        uploaded_file = st.file_uploader("Bir fotoğraf seçin...", type=['jpg', 'jpeg', 'png'], key="image_uploader")
+        
+        conf_threshold = st.slider("Hassasiyet Ayarı", 0.05, 0.50, 0.15, 0.05, help="Düşük değerler en ufak sızıntıları bile yakalar.")
+    
+    with col2:
+        st.subheader("Analiz Sonuçları")
+    
+    if uploaded_file:
+        image = Image.open(uploaded_file)
+        
+        with st.spinner('🔍 Görüntü taranıyor...'):
+            annotated_img, detections, proc_time = process_image(image, conf_threshold)
+        
+        
+        if detections:
+            st.markdown(f"""<div class="alert-box">🚨 {len(detections)} SIZINTI TESPİT EDİLDİ!</div>""", unsafe_allow_html=True)
+        else:
+            st.success("✅ Sistem Temiz: Sızıntı bulunamadı.")
+        
+        col_res1, col_res2 = st.columns([2, 1])
+        with col_res1:
+            st.image(annotated_img, caption='İşlenmiş Görüntü', use_container_width=True)
+        with col_res2:
+            st.markdown("### 📊 Metrikler")
+            st.markdown(f"""<div class="metric-card"><h4>Tespit Sayısı</h4><h2 style="color: #000000;">{len(detections)}</h2></div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="metric-card" style="margin-top:1rem;"><h4>İşlem Süresi</h4><h2 style="color: #000000;">{proc_time:.2f}sn</h2></div>""", unsafe_allow_html=True)
 
-            # ADIM 4: DASHBOARD GÜNCELLEME
-            if sızıntı_durumu:
-                status_placeholder.markdown('<div class="status-panel status-danger">⚠️ KRİTİK ALARM: SIZINTI TESPİT EDİLDİ</div>', unsafe_allow_html=True)
-                if len(olaylar) == 0 or (datetime.now() - olaylar[-1]["_t"]).seconds > 2:
-                    olaylar.append({"Zaman": datetime.now().strftime("%H:%M:%S"), "Tür": "DOĞRULANMIŞ", "Konum": lokasyon, "_t": datetime.now()})
-            else:
-                status_placeholder.markdown('<div class="status-panel status-safe">✅ SİSTEM GÜVENLİ: AKIŞ NORMAL</div>', unsafe_allow_html=True)
 
-            # KPI Kartları
-            k_ai.markdown(f'<div class="kpi-card"><div class="kpi-label">AI GÜVEN</div><div class="kpi-value">%{int(max_conf*100)}</div></div>', unsafe_allow_html=True)
-            k_mot.markdown(f'<div class="kpi-card"><div class="kpi-label">HAREKET</div><div class="kpi-value">{len(contours)}</div></div>', unsafe_allow_html=True)
-            k_loc.markdown(f'<div class="kpi-card"><div class="kpi-label">LOKASYON</div><div class="kpi-value">{lokasyon}</div></div>', unsafe_allow_html=True)
-            k_tim.markdown(f'<div class="kpi-card"><div class="kpi-label">SÜRE</div><div class="kpi-value">{datetime.now().strftime("%H:%M:%S")}</div></div>', unsafe_allow_html=True)
-
-            # Video ve Analitikler
-            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            video_screen.image(frame_rgb, use_container_width=True)
+with tab2:
+    st.subheader("Video Yükle ve Canlı İzle")
+    
+    uploaded_video = st.file_uploader("Video dosyasını seçin...", type=['mp4', 'avi', 'mov'], key="video_uploader")
+    video_conf = st.slider("Video Hassasiyeti", 0.05, 0.50, 0.15, 0.05, key="video_conf")
+    
+    if uploaded_video:
+       
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as tmp_file:
+            tmp_file.write(uploaded_video.read())
+            video_path = tmp_file.name
+        
+        if st.button("🚀 Canlı Analizi Başlat", type="primary", use_container_width=True):
             
-            if len(olaylar) > 0:
-                event_log.dataframe(pd.DataFrame(olaylar)[["Zaman", "Tür", "Konum"]].tail(8), use_container_width=True)
             
-            grafik_verisi.append(max_conf)
-            if len(grafik_verisi) > 50: grafik_verisi.pop(0)
-            chart_placeholder.line_chart(grafik_verisi)
+            vid_col1, vid_col2 = st.columns([2, 1])
+            
+            with vid_col2:
+                st.markdown("### 📊 Durum Paneli")
+                progress_bar = st.progress(0)
+                status_text = st.empty()
+                status_text.info("Video motoru hazırlanıyor...")
+            
+            with vid_col1:
+               
+                st_frame_placeholder = st.empty()
+            
+           
+            output_path, total_det, total_frames = process_video(
+                video_path,
+                video_conf,
+                progress_bar,
+                st_frame_placeholder 
+            )
+            
+            status_text.success("✅ Analiz tamamlandı!")
+            
+            
+            with vid_col2:
+                st.markdown("---")
+                if total_det > 0:
+                     st.markdown(f"""<div class="alert-box" style="font-size:1rem;">🚨 TOPLAM {total_det} KAREDE SIZINTI!</div>""", unsafe_allow_html=True)
+                else:
+                    st.success("✅ Video temiz.")
+                
+                
+                with open(output_path, 'rb') as f:
+                    st.download_button(
+                        label="📥 Analiz Videosunu İndir",
+                        data=f,
+                        file_name="safeflow_analiz.mp4",
+                        mime="video/mp4",
+                        use_container_width=True
+                    )
 
-        cap.release()
-else:
-    st.info("💡 Başlamak için lütfen sol panelden bir analiz videosu yükleyin.")
-    st.image("https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=1200")
+
+st.markdown("---")
+st.markdown("""
+    <div style="text-align: center; color: #666; padding: 1rem;">
+        <p>SafeFlow AI © 2025 | Endüstriyel Güvenlik ve İzleme Sistemi</p>
+    </div>
+""", unsafe_allow_html=True)
+
+# python -m streamlit run app.py 
