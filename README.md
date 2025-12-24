@@ -21,7 +21,8 @@ Hassas Tespit: 0.15 güven eşiği ile en ufak damlacıkları bile kaçırmaz.
 
 Hızlı Raporlama: Ortalama 0.14 saniye işlem süresi ile anlık sonuç üretir.
 
-<p align="left"> <img src="images/image_result.png" width="80%" alt="Image Analysis Result" /> </p>
+<img width="1853" height="875" alt="image" src="https://github.com/user-attachments/assets/4d665faf-9fed-4da6-be69-1a4d27ed6d7a" />
+
 
 
 ## 🎥 2. Canlı Video Akış Terminali
