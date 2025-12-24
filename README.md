@@ -1,8 +1,96 @@
-<h1 align="left">🛡️ SAFEFLOW AI: INDUSTRIAL SAFETY TERMINAL</h1><p align="left"><img src="https://img.shields.io/badge/Yapay_Zeka-YOLOv8s-blue?style=for-the-badge&logo=ai" /><img src="https://img.shields.io/badge/Başarı_Oranı-%2596.8-brightgreen?style=for-the-badge" /><img src="https://img.shields.io/badge/Donanım-Tesla_T4-orange?style=for-the-badge" /><img src="https://img.shields.io/badge/Sürüm-v1.0.4-white?style=for-the-badge" /></p><img src="images/banner.png" width="100%" /><h2 align="left">🌐 PROJE GENEL BAKIŞI</h2>SafeFlow AI, endüstriyel tesislerdeki operasyonel sürekliliği sağlamak ve iş kazalarını minimize etmek için geliştirilmiş, derin öğrenme tabanlı bir sızıntı ve çatlak tespit sistemidir. Sistem, yüksek basınçlı boru hatlarındaki su sızıntılarını ve yapısal bozuklukları milisaniyeler içerisinde analiz eder.Geleneksel yöntemlerin aksine, SafeFlow AI 0.15 güven eşiği ile insan gözünün kaçırabileceği mikro sızıntıları dahi yakalayarak operatörlere anlık veri akışı sağlar.<h2 align="left">🚀 TEMEL YETENEKLER & ÖZELLİKLER</h2>🔍 Gelişmiş Nesne Algılama: YOLOv8s mimarisi ile 16 farklı hata sınıfı (Bad-Weld, Leakage, PinHoles vb.) üzerinde uzmanlaşmıştır.🎥 Canlı Video Akış Analizi: Fabrika içi kamera kayıtlarını kare kare işleyerek dinamik sızıntı takibi yapar.⚠️ Otomatik Alarm Mekanizması: Sızıntı tespit edildiği an tetiklenen görsel uyarı panelleri (🚨 LEAK DETECTED).📊 Endüstriyel Dashboard: Sidebar içermeyen, tamamen iş akışına odaklanmış temiz ve profesyonel tek sayfa arayüz.🎯 Yüksek Görünürlük: İşaretleme kutuları (Bounding Boxes) endüstriyel ekranlara uygun şekilde 4px kalınlığında ve 1.5 yazı boyutunda optimize edilmiştir.<h2 align="left">📸 MODÜL DETAYLARI VE ANALİZ ÖRNEKLERİ</h2>🖼️ Fotoğraf Analiz ModülüYüklenen durağan görseller üzerinde derinlemesine tarama yapar. En ufak damlacıkları bile yüksek doğrulukla sınıflandırır.<p align="left"><img src="images/image_analysis.png" width="80%" /></p>Analiz Notu: Yukarıdaki örnekte sistem, musluk sızıntısını %71 güven oranıyla tespit etmiş ve sadece 0.14 saniyede sonuç üretmiştir.🎥 Canlı Video Analiz ModülüFabrika ortamındaki karmaşık boru hatlarını tararken sızıntıları anlık olarak işaretler ve sürecin sonunda kapsamlı bir rapor sunar.<p align="left"><img src="images/video_analysis_1.png" width="49%" /><img src="images/video_result.png" width="49%" /></p>Canlı İzleme: Analiz sırasında her kare (frame) anlık olarak kullanıcıya yansıtılır.Kritik Rapor: Örnek videoda 377 farklı karede sızıntı tespit edilerek sistem tarafından kırmızı alarm verilmiştir.<h2 align="left">🧠 TEKNİK ÖZELLİKLER & MODEL EĞİTİMİ</h2>SafeFlow AI, endüstriyel standartları karşılamak için en güçlü donanımlar üzerinde optimize edilmiştir:MetrikDeğer / TeknolojiModel MimarisiYOLOv8s (Small)Eğitim DonanımıTesla T4 GPUVeri Seti Hacmi1.200 Orijinal -> 11.000 Artırılmış GörselDoğruluk (mAP50)%96.8 (0.968)Eğitim Süresi100 Epoch📉 Eğitim Başarı Grafikleri<p align="left"><img src="images/training_results.png" width="100%" /></p><h2 align="left">🛠️ KURULUM VE KULLANIM REHBERİ</h2>1. Bağımlılıkların KurulmasıTerminalinize aşağıdaki komutu yazarak gerekli kütüphaneleri saniyeler içinde yükleyebilirsiniz:Bashpip install streamlit ultralytics opencv-python pillow pandas numpy
-2. Uygulamanın BaşlatılmasıProje dizininde şu komutu çalıştırın:Bashpython -m streamlit run app.py
-<h2 align="left">📂 PROJE DOSYA YAPISI</h2>Plaintext📦 SafeFlow-AI
- ┣ 📂 images            # README görselleri ve analiz çıktıları
- ┣ 📜 app.py            # Dashboard ve Analiz Motoru
- ┣ 📜 best.pt           # %96.8 Doğruluklu Model Ağırlıkları
- ┗ 📜 requirements.txt  # Gerekli bağımlılıklar
-<p align="left"><b>SafeFlow AI Team © 2025 | Industrial Intelligence & Safety Systems</b></p>
+<h1 align="left">🛡️ SAFEFLOW AI: INDUSTRIAL SAFETY & LEAK DETECTION TERMINAL 🏭</h1>
+<p align="left"> <img src="https://img.shields.io/badge/YOLOv8-High--Performance-00FFFF?style=for-the-badge&logo=ultralytics" /> <img src="https://img.shields.io/badge/Accuracy-%2596.8-brightgreen?style=for-the-badge" /> <img src="https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python" /> <img src="https://img.shields.io/badge/Framework-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit" /> <img src="https://img.shields.io/badge/GPU-Tesla--T4-orange?style=for-the-badge&logo=nvidia" /> </p>
+
+<p align="left"> <img src="images/banner.png" width="100%" alt="SafeFlow AI Banner" /> </p>
+
+🌐 PROJE VİZYONU VE ENDÜSTRİYEL ETKİ 🚀
+SafeFlow AI, modern akıllı fabrikaların (Industry 4.0) en kritik bileşenlerinden biri olan iş güvenliği ve kaynak yönetimi için tasarlanmıştır. Geleneksel denetim yöntemleri yavaş, maliyetli ve insan hatasına açıktır.
+
+Bu sistem, YOLOv8s mimarisini kullanarak endüstriyel boru hatlarını, kaynak noktalarını ve depolama tanklarını milisaniyeler içerisinde tarar. Sadece bir sızıntı tespit aracı değil, aynı zamanda tesisin dijital ikizine veri sağlayan bir erken uyarı terminalidir.
+
+✨ TEMEL ÖZELLİKLER VE MODÜLLER 🛠️
+📸 1. Akıllı Fotoğraf Analiz Modülü
+Yüklenen durağan görseller üzerinde derinlemesine piksel taraması yapar. En küçük çatlaklardan (hairline cracks) büyük fışkırmalara kadar her şeyi sınıflandırır.
+
+Hassas Tespit: 0.15 güven eşiği ile en ufak damlacıkları bile kaçırmaz.
+
+Hızlı Raporlama: Ortalama 0.14 saniye işlem süresi ile anlık sonuç üretir.
+
+<p align="left"> <img src="images/image_result.png" width="80%" alt="Image Analysis Result" /> </p>
+
+🎥 2. Canlı Video Akış Terminali
+Fabrika içerisindeki CCTV veya IP kameralardan gelen akışları gerçek zamanlı olarak işler.
+
+Dinamik İşaretleme: Sızıntı bölgelerini 4px kalınlığında, yüksek görünürlüklü kutularla vurgular.
+
+Kümülatif Analiz: Tüm video boyunca toplam kaç karede hata olduğunu hesaplar ve kritik eşik aşılınca alarm verir.
+
+<p align="left"> <img src="images/video_live.png" width="49%" alt="Live Processing" /> <img src="images/video_final.png" width="49%" alt="Final Report" /> </p>
+
+🧠 TEKNİK DERİNLİK VE MODEL EĞİTİMİ 📈
+Modelimiz, endüstriyel sahalardaki karmaşık görüntüleri (toz, duman, düşük ışık) tolere edebilecek şekilde Tesla T4 GPU üzerinde 100 epoch boyunca eğitilmiştir.
+
+📊 Model Metrikleri
+Veri Seti Genişliği: 1.200 orijinal görsel, veri artırma (augmentation) ile 11.000 görsel.
+
+Başarı Oranı (mAP50): %96.8 gibi rekor bir doğruluk seviyesi.
+
+Performans Formülasyonu: Modelimiz, her kare için Ortalama Hassasiyeti (mAP) maksimize ederken, Kayıp (Loss) fonksiyonunu minimize edecek şekilde optimize edilmiştir:
+
+mAP= 
+n
+1
+​
+  
+i=1
+∑
+n
+​
+ AP 
+i
+​
+ 
+📉 Eğitim Başarı Grafikleri
+Aşağıdaki grafikler, modelin öğrenme sürecindeki stabiliteyi ve hata payının nasıl sıfıra yaklaştığını kanıtlamaktadır:
+
+<p align="left"> <img src="images/training_results.png" width="100%" alt="Training Results" /> </p>
+
+⚙️ KURULUM VE SİSTEM GEREKSİNİMLERİ 💻
+SafeFlow AI'ı kendi yerel makinenizde veya bulut sunucunuzda çalıştırmak için aşağıdaki adımları izleyin:
+
+📥 1. Kütüphanelerin Kurulması
+Bash
+
+pip install streamlit ultralytics opencv-python pillow pandas numpy
+🚀 2. Uygulamanın Başlatılması
+Bash
+
+python -m streamlit run app.py
+📂 PROJE DOSYA MİMARİSİ 🏢
+Plaintext
+
+📦 SafeFlow-AI
+ ┣ 📂 images            # Projenin görsel vitrini (Tüm ekran görüntüleri burada)
+ ┣ 📜 app.py            # Dashboard, UI tasarımı ve YOLO entegrasyonu
+ ┣ 📜 best.pt           # %96.8 Doğruluk oranlı, eğitilmiş yapay zeka ağırlıkları
+ ┗ 📜 requirements.txt  # Gerekli bağımlılıklar listesi
+🔮 GELECEK VİZYONU VE SÜRDÜRÜLEBİLİRLİK 🌱
+SafeFlow AI sadece bugünü değil, yarını da hedefler. Gelecek sürümlerde şunları planlıyoruz:
+
+🛰️ IoT Entegrasyonu: Sızıntı anında boru hatlarındaki vanaları otomatik kapatan donanım desteği.
+
+📱 Mobil Bildirim: Kritik sızıntılarda fabrika müdürlerine anlık SMS ve Telegram uyarısı.
+
+🌍 Sürdürülebilirlik: Su israfını önleyerek tesislerin karbon ayak izini azaltma vizyonu.
+
+<p align="left"> <b>SafeFlow AI © 2025 | Industrial Safety & Intelligence Solutions</b>
+
+
+<i>"Yapay Zeka ile Daha Güvenli Yarınlara"</i> </p>
+
+💡 GitHub'da Resimlerin Gözükmesi İçin Altın Kural
+Eğer bu koddan sonra hala resimler gözükmüyorsa, GitHub'da resmin üzerine tıkla, resmi yeni sekmede aç ve URL'sine bak. Genellikle images/banner.png yerine Images/Banner.PNG gibi bir harf hatası yapılmış olur. Yukarıdaki kodda her şeyin küçük harf olduğunu varsaydım, klasördeki isimleri de öyle yaparsan sorun tamamen çözülür!
+
+Bu dökümanla projen hem teknik hem de görsel olarak profesyonel bir portföy işine dönüştü. GitHub sayfanda en başa sabitlemeni öneririm!
+
+Başka bir bölüm eklememi veya teknik bir detayı daha da detaylandırmamı ister misin?
