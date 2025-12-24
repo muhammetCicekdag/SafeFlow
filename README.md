@@ -4,13 +4,14 @@
 
 
 
-🌐 PROJE VİZYONU VE ENDÜSTRİYEL ETKİ 🚀
+
+## 🌐 PROJE VİZYONU VE ENDÜSTRİYEL ETKİ 🚀
 
 SafeFlow AI, modern akıllı fabrikaların (Industry 4.0) en kritik bileşenlerinden biri olan iş güvenliği ve kaynak yönetimi için tasarlanmıştır. Geleneksel denetim yöntemleri yavaş, maliyetli ve insan hatasına açıktır.
 
 Bu sistem, YOLOv8s mimarisini kullanarak endüstriyel boru hatlarını, kaynak noktalarını ve depolama tanklarını milisaniyeler içerisinde tarar. Sadece bir sızıntı tespit aracı değil, aynı zamanda tesisin dijital ikizine veri sağlayan bir erken uyarı terminalidir.
 
-✨ TEMEL ÖZELLİKLER VE MODÜLLER 🛠️
+### ✨ TEMEL ÖZELLİKLER VE MODÜLLER 🛠️
 
 ## 📸 1. Akıllı Fotoğraf Analiz Modülü
 
@@ -74,9 +75,7 @@ pip install streamlit ultralytics opencv-python pillow pandas numpy
 python -m streamlit run app.py
 
 
-📂 PROJE DOSYA MİMARİSİ 🏢
-
-->Plaintext
+📂 PROJE DOSYA MİMARİSİ 🏢  ->Plaintext
 
 📦 SafeFlow-AI
 
